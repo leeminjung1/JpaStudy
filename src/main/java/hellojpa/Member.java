@@ -25,6 +25,13 @@ public class Member {
         return team;
     }
 
+    /* setTeam 은 관례상 사용되는 setter 느낌이므로
+    *  중요하다는 의미에서 이름 바꿔서 사용 */
+//    public void changeTeam(Team team) {
+//        this.team = team;
+//        team.getMembers().add(this);
+//    }
+
     public void setTeam(Team team) {
         this.team = team;
     }
@@ -45,11 +52,4 @@ public class Member {
         this.username = username;
     }
 
-//    public Long getTeamId() {
-//        return teamId;
-//    }
-//
-//    public void setTeamId(Long teamId) {
-//        this.teamId = teamId;
-//    }
 }
