@@ -3,8 +3,8 @@ package hellojpa;
 import javax.persistence.*;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED) // 조인 전략
-@DiscriminatorColumn                            // DTYPE
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 단일 테이블 전략: item table 하나만 생성됨
+//@DiscriminatorColumn                              // 없어도 DTYPE 자동 생성됨
 public class Item {
 
     @Id
