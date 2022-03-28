@@ -13,6 +13,15 @@ public class Member {
     @Column(name = "USERNAME")
     private String username;
 
+    // 일대일
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    public Locker getLocker() {
+        return locker;
+    }
+
     public Long getId() {
         return id;
     }
