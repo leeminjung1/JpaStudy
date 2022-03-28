@@ -1,6 +1,8 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Member {
@@ -13,10 +15,18 @@ public class Member {
     @Column(name = "USERNAME")
     private String username;
 
-    // 일대일
     @OneToOne
     @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
+
+    // MANY TO MANY
+//    @ManyToMany
+//    @JoinTable(name = "MEMBER_PRODUCT")
+//    private List<Product> products = new ArrayList<>();
+
+    // many to many 대신 사용
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     public Locker getLocker() {
         return locker;
