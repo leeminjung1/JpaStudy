@@ -14,7 +14,16 @@ public class Team extends BaseEntity{
 
     @OneToMany
     @JoinColumn(name = "TEAM_ID")   // 일대다 단방향
-    private List<Member > members = new ArrayList<>();
+    private List<Member> members = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", members=" + members +
+                '}';
+    }
 
     public Long getId() {
         return id;

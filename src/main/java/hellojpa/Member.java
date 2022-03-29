@@ -1,8 +1,6 @@
 package hellojpa;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Member extends BaseEntity{
@@ -15,9 +13,19 @@ public class Member extends BaseEntity{
     @Column(name = "USERNAME")
     private String username;
 
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)      // 지연로딩
+//    @ManyToOne(fetch = FetchType.EAGER)     // 즉시로딩
+    @JoinColumn
     private Team team;
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", team=" + team +
+                '}';
+    }
 
     public Long getId() {
         return id;
