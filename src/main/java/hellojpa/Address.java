@@ -1,6 +1,7 @@
 package hellojpa;
 
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 public class Address {
@@ -21,26 +22,24 @@ public class Address {
         return city;
     }
 
-    /*
-        생성자로만 값을 넣고 setter는 모두 지워 불변객체로 만들어줘야 인스턴스 공유가되더라도 변경할 수 없게됨
-     */
-//    public void setCity(String city) {
-//        this.city = city;
-//    }
-
     public String getStreet() {
         return street;
     }
-
-//    public void setStreet(String street) {
-//        this.street = street;
-//    }
 
     public String getZipcode() {
         return zipcode;
     }
 
-//    public void setZipcode(String zipcode) {
-//        this.zipcode = zipcode;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(city, address.city) && Objects.equals(street, address.street) && Objects.equals(zipcode, address.zipcode);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(city, street, zipcode);
+    }
 }
