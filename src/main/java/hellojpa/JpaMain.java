@@ -1,12 +1,16 @@
 package hellojpa;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Set;
 
 public class JpaMain {
 
     public static void main(String[] args) {
+
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
         EntityManager em = emf.createEntityManager();
@@ -14,56 +18,37 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
-            Member member = new Member();
-            member.setUsername("member");
-            member.setHomeAddress(new Address("homeCity", "street", "10000"));
 
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("엽떡로제");
-            member.getFavoriteFoods().add("피자");
-            member.getFavoriteFoods().add("파스타");
+            Member member1 = new Member();
+            member1.setUsername("kim");
+            em.persist(member1);
 
-            member.getAddressHistory().add(new AddressEntity("old1", "street", "10000"));
-            member.getAddressHistory().add(new AddressEntity("old2", "street", "10000"));
-            member.getAddressHistory().add(new AddressEntity("old3", "street", "10000"));
+            // JPQL
+            List<Member> result = em.createQuery("select m From Member m where m.username like '%kim%'", Member.class)
+                    .getResultList();
+            for (Member member : result) {
+                System.out.println("member = " + member);
+            }
 
-            // 값 타입 컬렉션의 라이프사이클은 모두 member 에 의존
-            em.persist(member);
+            // Criteria
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
 
+
+            Root<Member> m = query.from(Member.class);
+
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            List<Member> resultList = em.createQuery(cq).getResultList();
+
+
+            // native sql
             em.flush();
-            em.clear();
-
-            System.out.println("============== start ==============");
-            // member 가져오면 member만 select함 -> 값타임컬렉션은 지연로딩
-            Member findMember = em.find(Member.class, member.getId());
-            System.out.println("============== lazy ==============");
-            List<AddressEntity> addressHistory = findMember.getAddressHistory();
-            for (AddressEntity address : addressHistory) {
-                System.out.println("address = " + address.getAddress().getCity());
+            String sql = "select MEMBER_ID, city, street, zipcode, USERNAME from MEMBER";
+            List<Member> resultList1 = em.createNativeQuery(sql, Member.class).getResultList();
+            for (Member member : resultList1) {
+                System.out.println("member = " + member);
             }
 
-            Set<String> favoriteFoods = findMember.getFavoriteFoods();
-            for (String favoriteFood : favoriteFoods) {
-                System.out.println("favoriteFood = " + favoriteFood);
-            }
-
-            // 컬렉션 값만 변경돼도 jpa가 알아서 바꿔줌
-            // 치킨 -> 죽
-            findMember.getFavoriteFoods().remove("치킨");
-            findMember.getFavoriteFoods().add("죽");
-
-/*
-            // old1 -> new1
-            // equals 구현되어있어서 가능한 것
-            Address a = new Address("old1", "street", "10000");
-            // 하나 지우면 모든 값 지우고 다시 삽입
-            // insert쿼리가 위에서 생성한거 - 지운거 만큼 다시 생김
-            findMember.getAddressHistory().remove(a);
-            // 그다음에 새로운거 추가
-            findMember.getAddressHistory().add(new AddressEntity("new1", a.getStreet(), a.getZipcode()));
-*/
-
-            findMember.getAddressHistory().get(0).setAddress(new Address("new1", "street", "10000"));
 
             tx.commit();
         } catch (Exception e) {
